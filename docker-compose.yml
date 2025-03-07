@@ -1,0 +1,42 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - '5672:5672'   # Основной порт для RabbitMQ
+      - '15672:15672' # Порт для RabbitMQ Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+
+  app:
+    build: .
+    container_name: fastapi_app
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    ports:
+      - '9000:9000'
+    environment:
+      RABBIT_HOST: rabbitmq  # имя сервиса (так как в docker-compose internal network)
+      RABBIT_PORT: 5672
+      RABBIT_USER: user
+      RABBIT_PASS: password
+
+  consumer:
+    build: .
+    container_name: consumer
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      RABBIT_HOST: rabbitmq
+      RABBIT_PORT: 5672
+      RABBIT_USER: user
+      RABBIT_PASS: password
+    command: python consumer.py
