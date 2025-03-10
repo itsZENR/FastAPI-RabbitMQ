@@ -8,7 +8,9 @@ RABBIT_PASS = os.getenv("RABBIT_PASS", "guest")
 
 credentials = pika.PlainCredentials(RABBIT_USER, RABBIT_PASS)
 parameters = pika.ConnectionParameters(host=RABBIT_HOST, port=RABBIT_PORT, credentials=credentials)
+print("Starting consumer script...")
 connection = pika.BlockingConnection(parameters)
+print("Connection successful, creating channel...")
 channel = connection.channel()
 
 channel.queue_declare(queue='my_queue', durable=True)
@@ -17,7 +19,7 @@ print(" [*] Waiting for messages. To exit press CTRL+C")
 
 def callback(ch, method, properties, body):
     message = body.decode()
-    print(f" [x] Received: {message}")
+    print(f" [x] Received: {message}", flush=True)
     # Здесь любая логика обработки
     # ...
     ch.basic_ack(delivery_tag=method.delivery_tag)
