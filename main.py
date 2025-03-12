@@ -1,8 +1,12 @@
 import os
 import pika
 from fastapi import FastAPI
+from prometheus_fastapi_instrumentator import Instrumentator
 
 app = FastAPI()
+
+# Инициализируем и подключаем инструментатор метрик
+Instrumentator().instrument(app).expose(app)
 
 # Читаем переменные окружения (из docker-compose или напрямую)
 RABBIT_HOST = os.getenv("RABBIT_HOST", "rabbitmq")

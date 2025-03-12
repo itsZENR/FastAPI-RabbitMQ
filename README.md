@@ -23,3 +23,7 @@
 4. Docker Compose:
 
     * Поднимает и RabbitMQ, и наше приложение единым набором команд (декларативно).
+
+5. Prometheus:
+
+    * `prometheus_fastapi_instrumentator`.
